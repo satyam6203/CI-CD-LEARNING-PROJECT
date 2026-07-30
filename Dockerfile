@@ -1,12 +1,14 @@
-FROM maven:3.9-eclipse-temurin-21 AS build
-WORKDIR /workspace
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn package -DskipTests -B
-
+# Use Eclipse Temurin Java 21 Runtime Image
 FROM eclipse-temurin:21-jre
+
+# Set working directory inside the container
 WORKDIR /app
-COPY --from=build /workspace/target/cicdDemo-0.0.1-SNAPSHOT.jar app.jar
+
+# Copy the generated JAR file into the container
+COPY target/*.jar app.jar
+
+# Expose the application port
 EXPOSE 8080
+
+# Start the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]
