@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   JAVA_VERSION: 21
   DOCKER_IMAGE: ci-cd-app
@@ -11,25 +15,26 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: 21
           distribution: temurin
           cache: maven
+
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
 
       - name: Build with Maven
         run: ./mvnw clean package -DskipTests
 
       - name: Run tests
         run: ./mvnw test
-
-      - name: Building Docker image
-        run: docker build -t ${{ env.DOCKER_IMAGE }} .
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,14 +51,14 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:${{ github.sha }} .
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:${{ github.sha }} \
-            ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:latest
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }} \
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
 
       - name: Push Docker Image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
 
       - name: Azure Login
         uses: azure/login@v2
@@ -66,4 +71,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: cicd-app
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/ci-cd-app:latest
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
