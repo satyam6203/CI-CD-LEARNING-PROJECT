@@ -19,4 +19,9 @@ public class HomeController {
         return ResponseEntity.ok().body("i am currently persuing BTech in parul university");
 
     }
+
+    @GetMapping("/collage")
+    public ResponseEntity<String> collage(){
+        return ResponseEntity.ok().body("Parul University");
+    }
 }
