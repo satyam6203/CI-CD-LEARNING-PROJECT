@@ -34,4 +34,9 @@ public class HomeController {
     public String dev(){
         return "i am in CSE1";
     }
+
+    @GetMapping("/project")
+    public String project(){
+        return "i am currently working on airline project";
+    }
 }
