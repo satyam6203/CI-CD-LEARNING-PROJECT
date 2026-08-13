@@ -24,4 +24,9 @@ public class HomeController {
     public ResponseEntity<String> collage(){
         return ResponseEntity.ok().body("Parul University");
     }
+
+    @GetMapping("/address")
+    public ResponseEntity<String> address(){
+        return ResponseEntity.ok().body("hello i am from ara bihar.");
+    }
 }
