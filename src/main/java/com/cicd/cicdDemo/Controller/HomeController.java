@@ -29,4 +29,9 @@ public class HomeController {
     public ResponseEntity<String> address(){
         return ResponseEntity.ok().body("hello i am from ara bihar.");
     }
+
+    @GetMapping("/dev")
+    public String dev(){
+        return "i am in CSE1";
+    }
 }
