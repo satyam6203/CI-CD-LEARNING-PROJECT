@@ -39,9 +39,14 @@ public class HomeController {
     public String project(){
         return "i am currently working on airline project";
     }
-    
+
     @GetMapping("/exp")
     public String Experience(){
         return "i am currently working on nyric.ai";
+    }
+
+    @GetMapping("/hostel")
+    public String hostel(){
+        return "Tagore A";
     }
 }
